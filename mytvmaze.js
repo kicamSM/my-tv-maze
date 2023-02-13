@@ -72,6 +72,7 @@ function populateShows(shows) {
   }
 }
 
+//this function is adding the shows onto the page. Orginally when I got this working I only had the show at index zero. It is also appending a button on the screen which you can barely see that will be later used to display the episodes
 
 /** Handle search form submission: get shows from API and display.
  *    Hide episodes area (that only gets shown if they ask for episodes)
@@ -79,6 +80,7 @@ function populateShows(shows) {
 
 async function searchForShowAndDisplay() {
   const searchTerm = $("#search-query").val();
+  //obtaining the value in the input to pass into the function
   const shows = await getShowsByTerm(searchTerm);
 
   $episodesArea.hide();
@@ -97,40 +99,39 @@ $searchForm.on("submit", async function (evt) {
 
 async function getEpisodesOfShow(id) {
   const episodesResponse = await axios.get(`http://api.tvmaze.com/shows/${id}/episodes`);
-  console.log(episodesResponse.data)
-  const episodes = episodesResponse
+ // obtaining the data from the API using the proper id 
   return episodesResponse.data.map(e => ({
       id: e.id,
       name: e.name,
       season: e.season,
       number: e.number,
     }));
+
+    //returning the propper information from the data 
 }
 
-/** Write a clear docstring for this function... */
 
 function populateEpisodes(episodes) { 
   $episodesList.empty(); 
 
   for (let episode of episodes) {
     const $episode = $(
-        `<ul>
+        `
           <h5>${episode.name}</h5>
           <li>
-            <h6>${episode.season}<h6>
-          </li>
-          <li>
-            <h7>${episode.number}</h7>
+            Season ${episode.season},
+            Episode ${episode.number}
           </li>
       `);
       $episodesList.append($episode)
 }
 $episodesArea.show();
 
+//this is pushing the episodes list into into html/ so it will appaer on the browser. Note: that later on this could be fixed by pushing that data in the browser at a more visible space. I thought it was not appending to the screen because it was at the bottom and I didn't see it. Also, show the episodes area which was previously hiddden.
 }
 
 async function getEpisodesAndDisplay(evt) {
-
+//this one is obtaining the episodes and by cliking on the taget and showing the episodes. 
   const showId = $(evt.target).closest(".Show").data("show-id");
 
   const episodes = await getEpisodesOfShow(showId);
@@ -138,3 +139,6 @@ async function getEpisodesAndDisplay(evt) {
 }
 
 $showsList.on("click", ".Show-getEpisodes", getEpisodesAndDisplay);
+//this is our event listener
+
+//note would like to go back and style this later but need to move forward due to time constraints. 
