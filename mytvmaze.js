@@ -15,14 +15,27 @@ const $searchForm = $("#search-form");
 async function getShowsByTerm(searchTerm) {
   const response = await axios.get(`https://api.tvmaze.com/search/shows?q=${searchTerm}`);
   
-  const id = response.data[0]['show']['id'];
-  const name = response.data[0]['show']['name']
-  const summary = response.data[0]['show']['summary']
-  const image = response.data[0]['show']['image']['medium']
+  // const id = response.data[0]['show']['id'];
+  // const name = response.data[0]['show']['name']
+  // const summary = response.data[0]['show']['summary']
+  // const image = response.data[0]['show']['image']['medium']
 
-  const shows = [{id: id, name: name, summary:summary, image: image}]
+  // const shows = [{id: id, name: name, summary:summary, image: image}]
 
-populateShows(shows);
+  response.data.map(result => {
+    const show = result.show;
+    console.log(result.show)
+    return {
+      id: show.id,
+      name: show.name,
+      summary: show.summary,
+      image: show.image ? show.image.medium : 'https://tinyurl.com/tv-missing', 
+
+    };
+
+  });
+
+// populateShows(shows);
 
 
   // ADD: Remove placeholder & make request to TVMaze search shows API.
@@ -64,7 +77,7 @@ function populateShows(shows) {
  */
 
 async function searchForShowAndDisplay() {
-  const searchTerm = $("#search-form").val();
+  const searchTerm = $("#search-query").val();
   const shows = await getShowsByTerm(searchTerm);
 
   $episodesArea.hide();
