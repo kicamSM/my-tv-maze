@@ -3,6 +3,7 @@
 const $showsList = $("#shows-list");
 const $episodesArea = $("#episodes-area");
 const $searchForm = $("#search-form");
+const $episodesList = $("#episodes-list")
 
 
 /** Given a search term, search for tv shows that match that query.
@@ -22,9 +23,8 @@ async function getShowsByTerm(searchTerm) {
 
   // const shows = [{id: id, name: name, summary:summary, image: image}]
 
-  response.data.map(result => {
+  return response.data.map(result => {
     const show = result.show;
-    console.log(result.show)
     return {
       id: show.id,
       name: show.name,
@@ -32,6 +32,7 @@ async function getShowsByTerm(searchTerm) {
       image: show.image ? show.image.medium : 'https://tinyurl.com/tv-missing', 
 
     };
+//note i did need help with this. I was just returning the first result initially at index 0
 
   });
 
@@ -94,8 +95,46 @@ $searchForm.on("submit", async function (evt) {
  *      { id, name, season, number }
  */
 
-// async function getEpisodesOfShow(id) { }
+async function getEpisodesOfShow(id) {
+  const episodesResponse = await axios.get(`http://api.tvmaze.com/shows/${id}/episodes`);
+  console.log(episodesResponse.data)
+  const episodes = episodesResponse
+  return episodesResponse.data.map(e => ({
+      id: e.id,
+      name: e.name,
+      season: e.season,
+      number: e.number,
+    }));
+}
 
 /** Write a clear docstring for this function... */
 
-// function populateEpisodes(episodes) { }
+function populateEpisodes(episodes) { 
+  $episodesList.empty(); 
+
+  for (let episode of episodes) {
+    const $episode = $(
+        `<ul>
+          <h5>${episode.name}</h5>
+          <li>
+            <h6>${episode.season}<h6>
+          </li>
+          <li>
+            <h7>${episode.number}</h7>
+          </li>
+      `);
+      $episodesList.append($episode)
+}
+$episodesArea.show();
+
+}
+
+async function getEpisodesAndDisplay(evt) {
+
+  const showId = $(evt.target).closest(".Show").data("show-id");
+
+  const episodes = await getEpisodesOfShow(showId);
+  populateEpisodes(episodes);
+}
+
+$showsList.on("click", ".Show-getEpisodes", getEpisodesAndDisplay);
