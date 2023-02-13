@@ -64,7 +64,7 @@ function populateShows(shows) {
  */
 
 async function searchForShowAndDisplay() {
-  const searchTerm = $("#search-form").val();
+  const searchTerm = $("#search-query").val();
   const shows = await getShowsByTerm(searchTerm);
 
   $episodesArea.hide();
